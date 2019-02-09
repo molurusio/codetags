@@ -8,6 +8,7 @@ Thumbs.db
 *.egg-info
 *.tfstate
 *.tfstate.backup
+/.env
 /.hit
 /.vagrant
 /.vscode
