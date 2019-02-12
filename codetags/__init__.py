@@ -11,3 +11,5 @@ __maintainer_email__ = 'pnhung177@acegik.net'
 __license__ = 'MIT'
 
 from codetags.main import default
+from codetags.main import newInstance
+from codetags.main import getInstance

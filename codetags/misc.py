@@ -1,4 +1,7 @@
+#!/usr/bin/env python
+
 import logging
+import re
 
 class Misc(object):
   _handler = logging.StreamHandler()
@@ -12,5 +15,10 @@ class Misc(object):
     logger.setLevel(logging.DEBUG)
     logger.addHandler(self._handler)
     return logger
+
+  def labelify(self, label):
+    if type(label) == str:
+      return re.sub('\W{1,}', '_', label).upper()
+    return label
 
 misc = Misc()
