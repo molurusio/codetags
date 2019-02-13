@@ -31,7 +31,7 @@ class Codetags(object):
           if "plan" in descriptor:
             plan = descriptor["plan"]
             if isinstance(plan, dict) and "enabled" in plan and isinstance(plan["enabled"], bool):
-              if "version" in self.__presets:
+              if "version" in self.__presets and misc.isVersionValid(self.__presets["version"]):
                 _validated = True
                 _satisfied = True
                 if "minBound" in plan and isinstance(plan["minBound"], str):
