@@ -17,5 +17,14 @@ class MiscTest(unittest.TestCase):
     self.assertEqual(misc.labelify("user@example.com"), "USER_EXAMPLE_COM");
     pass
 
+  def test_stringToArray(self):
+    self.assertListEqual(misc.stringToArray(None), [])
+    self.assertListEqual(misc.stringToArray(""), [])
+    self.assertListEqual(misc.stringToArray(123), [])
+    self.assertListEqual(misc.stringToArray("abc"), ["abc"])
+    self.assertListEqual(misc.stringToArray("abc , def"), ["abc", "def"])
+    self.assertListEqual(misc.stringToArray("abc, ,def"), ["abc", "def"])
+    pass
+
 if __name__ == '__main__':
   unittest.main()

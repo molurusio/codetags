@@ -21,4 +21,16 @@ class Misc(object):
       return re.sub('\W{1,}', '_', label).upper()
     return label
 
+  def stringToArray(self, labels):
+    if isinstance(labels, str):
+      _arr = re.split(r',', labels)
+      def labels_map(item):
+        return item.strip()
+      def labels_filter(item):
+        return len(item) > 0
+      _arr = map(labels_map, _arr)
+      _arr = filter(labels_filter, _arr)
+      return _arr
+    return []
+
 misc = Misc()

@@ -16,6 +16,23 @@ class CodetagsTest(unittest.TestCase):
     # self.assertTrue('This is broken' in context.exception)
     pass
 
+  def test_register_add_descriptors(self):
+    codetags.initialize(**{
+        'namespace': 'codetags',
+        'positiveTagsLabel': 'INCLUDED_TAGS',
+        'negativeTagsLabel': 'EXCLUDED_TAGS',
+        'version': '0.1.7',
+    })
+    codetags.register([
+      {
+        'name': 'tag-1'
+      },
+      {
+        'name': 'tag-2'
+      }
+    ])
+    pass
+
   def test_always_true(self):
     codetags.initialize(**{
         'namespace': 'codetags',
