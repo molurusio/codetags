@@ -37,10 +37,7 @@ class Misc(object):
 
   def stringToArray(self, labels):
     if isinstance(labels, str):
-      _arr = re.split(r',', labels)
-      _arr = map(lambda item: item.strip(), _arr)
-      _arr = filter(lambda item: len(item) > 0, _arr)
-      return _arr
+      return filter(lambda s: len(s) > 0, map(lambda s: s.strip(), re.split(r',', labels)))
     return []
 
 misc = Misc()
