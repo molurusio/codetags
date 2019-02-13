@@ -25,6 +25,11 @@ class MiscTest(unittest.TestCase):
     self.assertListEqual(misc.stringToArray("abc , def"), ["abc", "def"])
     self.assertListEqual(misc.stringToArray("abc, ,def"), ["abc", "def"])
     pass
+  
+  def test_isVersionValid(self):
+    self.assertTrue(misc.isVersionValid("0.1.4"))
+    self.assertFalse(misc.isVersionValid("0.a.b"))
+    pass
 
 if __name__ == '__main__':
   unittest.main()
