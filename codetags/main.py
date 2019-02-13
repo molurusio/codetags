@@ -7,11 +7,7 @@ DEFAULT_NAMESPACE = "CODETAGS"
 
 class Codetags(object):
   def __init__(self, **kwargs):
-    self.__store = {
-      "env": {},
-      "cachedTags": {},
-      "declaredTags": []
-    }
+    self.__store = { "env": {}, "cachedTags": {}, "declaredTags": [] }
     self.__presets = {}
     self.initialize()
     pass
@@ -20,11 +16,9 @@ class Codetags(object):
     for field_name in ["namespace", "includedTagsLabel", "excludedTagsLabel"]:
       if field_name in kwargs and type(kwargs[field_name]) == str:
         self.__presets[field_name] = misc.labelify(kwargs[field_name])
-        pass
     for field_name in ["version"]:
       if field_name in kwargs and type(kwargs[field_name]) == str:
         self.__presets[field_name] = kwargs[field_name]
-        pass
     return self
 
   def register(self, descriptors):
@@ -45,11 +39,13 @@ class Codetags(object):
                   if _validated:
                     _satisfied = _satisfied and misc.isVersionLTE(plan["minBound"], self.__presets["version"])
                     pass
+                  pass
                 if "maxBound" in plan and isinstance(plan["maxBound"], str):
                   _validated = _validated and misc.isVersionValid(plan["maxBound"])
                   if _validated:
                     _satisfied = _satisfied and misc.isVersionLT(self.__presets["version"], plan["maxBound"])
                     pass
+                  pass
                 if _validated:
                   if _satisfied:
                     return plan["enabled"]
@@ -57,6 +53,14 @@ class Codetags(object):
                     if "enabled" in descriptor and isinstance(descriptor["enabled"], bool):
                       return descriptor["enabled"]
                     return not plan["enabled"]
+                  pass
+          # determine enabled value
+          if "enabled" in descriptor and isinstance(descriptor["enabled"], bool):
+            return descriptor["enabled"]
+          # return default value
+          return True
+        # not (string and dict)
+        return False
       refs = filter(descriptors_filter_handler, descriptors)
       # extract tag labels
       def descriptors_map_handler(descriptor):
@@ -82,14 +86,14 @@ class Codetags(object):
   
   def reset(self):
     self.clearCache()
-    self.__store["declaredTags"].clear()
+    del self.__store["declaredTags"][:]
     self.__presets.clear()
     return self
 
   def _refreshEnv(self):
     self.__store["env"].clear()
     for tagType in ["includedTags", "excludedTags"]:
-      self.__store[tagType] = self._getEnv(self._getLabel(tagType));
+      self.__store[tagType] = self._getEnv(self._getLabel(tagType))
     return self
   
   def _getLabel(self, tagType):
@@ -98,13 +102,14 @@ class Codetags(object):
       _label = self.__presets["namespace"] + _label
     else:
       _label = DEFAULT_NAMESPACE + _label
+    pass
     if tagType == "includedTags":
       return _label + ("INCLUDED_TAGS" if not "includedTagsLabel" in self.__presets else self.__presets["includedTagsLabel"])
     if tagType == "excludedTags":
       return _label + ("EXCLUDED_TAGS" if not "excludedTagsLabel" in self.__presets else self.__presets["excludedTagsLabel"])
     return _label + (misc.labelify(tagType) if not tagType in self.__presets else self.__presets[tagType])
 
-  def _getEnv(self, label, defaultValue):
+  def _getEnv(self, label, defaultValue = None):
     # label is not a string
     if not isinstance(label, str):
       return None

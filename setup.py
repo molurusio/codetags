@@ -12,7 +12,7 @@ setuptools.setup(
   license = package.__license__,
   url = 'https://github.com/molurusio/codetags',
   download_url = 'https://github.com/molurusio/codetags/downloads',
-  keywords = ['molurus', 'codetags', 'feature-toggle'],
+  keywords = ['molurus', 'feature-toggle'],
   classifiers = [],
   packages = [package.__name__],
   #packages = setuptools.find_packages(),
