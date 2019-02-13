@@ -30,7 +30,7 @@ class Codetags(object):
   def register(self, descriptors):
     if isinstance(descriptors, list):
       # filter valid descriptors
-      def filter_descriptors(descriptor):
+      def descriptors_filter_handler(descriptor):
         if isinstance(descriptor, str):
           return True
         if isinstance(descriptor, dict) and "name" in descriptor:
@@ -57,25 +57,23 @@ class Codetags(object):
                     if "enabled" in descriptor and isinstance(descriptor["enabled"], bool):
                       return descriptor["enabled"]
                     return not plan["enabled"]
-        pass
-      refs = filter(filter_descriptors, descriptors)
+      refs = filter(descriptors_filter_handler, descriptors)
       # extract tag labels
-      def map_descriptors(descriptor):
+      def descriptors_map_handler(descriptor):
         if isinstance(descriptor, str):
           return descriptor
         if isinstance(descriptor, dict) and "name" in descriptor:
           return descriptor["name"]
         return None
-      tags = map(map_descriptors, refs)
+      tags = map(descriptors_map_handler, refs)
       # add to declaredTags
       for tag in tags:
         if not tag in self.__store["declaredTags"]:
           self.__store["declaredTags"].append(tag)
-      pass
     return self
 
   def isActive(self, *tagexps):
-    pass
+    return self._isArgumentsSatisfied(tagexps)
   
   def clearCache(self):
     self.__store["cachedTags"].clear()
@@ -137,6 +135,47 @@ class Codetags(object):
     if tagType in self.__store:
       return self.__store[tagType][0::]
     return []
+
+  def _isArgumentsSatisfied(self, arguments):
+    for arg in arguments:
+      if self._evaluateExpression(arg):
+        return True
+    return False
+
+  def _isAllOfLabelsSatisfied(self, exps):
+    if isinstance(exps, list):
+      for exp in exps:
+        if not self._evaluateExpression(exp):
+          return False
+      return True
+    return self._evaluateExpression(exps)
+  
+  def _isAnyOfLabelsSatisfied(self, exps):
+    if isinstance(exps, list):
+      for exp in exps:
+        if self._evaluateExpression(exp):
+          return True
+      return False
+    return self._evaluateExpression(exps)
+
+  def _isNotOfLabelsSatisfied(self, exp):
+    return not self._evaluateExpression(exp)
+
+  def _evaluateExpression(self, exp):
+    return self._checkLabelActivated(exp)
+
+  def _checkLabelActivated(self, label):
+    if label in self.__store["cachedTags"]:
+      return self.__store["cachedTags"][label]
+    self.__store["cachedTags"][label] = self._forceCheckLabelActivated(label)
+    return self.__store["cachedTags"][label]
+  
+  def _forceCheckLabelActivated(self, label):
+    if label in self.__store["excludedTags"]:
+      return False
+    if label in self.__store["includedTags"]:
+      return True
+    return label in self.__store["declaredTags"]
 
 default = Codetags()
 
