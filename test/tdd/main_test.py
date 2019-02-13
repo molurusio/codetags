@@ -91,5 +91,64 @@ class CodetagsTest(unittest.TestCase):
     self.assertListEqual(codetags.getDeclaredTags(), featureList)
     pass
 
+  def data_getLabel():
+    return [
+      [ None, "includedTags", None, "CODETAGS_INCLUDED_TAGS" ],
+      [ None, "excludedTags", None, "CODETAGS_EXCLUDED_TAGS" ],
+      [ None, "includedTags", "POSITIVE_TAGS", "CODETAGS_POSITIVE_TAGS" ],
+      [ None, "excludedTags", "NEGATIVE_TAGS", "CODETAGS_NEGATIVE_TAGS" ],
+      [ "testing", "includedTags", "POSITIVE_TAGS", "TESTING_POSITIVE_TAGS" ],
+      [ "TESTING", "excludedTags", "NEGATIVE_TAGS", "TESTING_NEGATIVE_TAGS" ]
+    ]
+
+  @data_provider(data_getLabel)
+  def test_getLabel(self, namespace, label_type, label, expected):
+    _params = {}
+    if isinstance(label, str):
+      _params[label_type + 'Label'] = label
+    if isinstance(namespace, str):
+      _params["namespace"] = namespace
+      pass
+    codetags.reset().initialize(**_params)
+    self.assertEquals(codetags._getLabel(label_type), expected)
+    pass
+
+  def test_isActive(self):
+    os.environ["CODETAGS_INCLUDED_TAGS"] = "abc, def, xyz, tag-4"
+    os.environ["CODETAGS_EXCLUDED_TAGS"] = "disabled, tag-2"
+    codetags.reset().register(['tag-1', 'tag-2'])
+    # An arguments-list presents the OR conditional operator
+    self.assertTrue(codetags.isActive('abc'));
+    self.assertTrue(codetags.isActive('abc', 'xyz'));
+    self.assertTrue(codetags.isActive('abc', 'disabled'));
+    self.assertTrue(codetags.isActive('disabled', 'abc'));
+    self.assertTrue(codetags.isActive('abc', 'nil'));
+    self.assertTrue(codetags.isActive('undefined', 'abc', 'nil'));
+    self.assertFalse(codetags.isActive());
+    self.assertFalse(codetags.isActive(None));
+    self.assertFalse(codetags.isActive('disabled'));
+    self.assertFalse(codetags.isActive('nil'));
+    self.assertFalse(codetags.isActive('nil', 'disabled'));
+    self.assertFalse(codetags.isActive('nil', 'disabled', 'abc.xyz'));
+    # An array argument presents the AND conditional operator
+    self.assertTrue(codetags.isActive(['abc', 'xyz'], 'nil'));
+    self.assertTrue(codetags.isActive(['abc', 'xyz'], None));
+    self.assertFalse(codetags.isActive(['abc', 'nil']));
+    self.assertFalse(codetags.isActive(['abc', 'def', 'nil']));
+    self.assertFalse(codetags.isActive(['abc', 'def', 'disabled']));
+    self.assertFalse(codetags.isActive(['abc', '123'], ['def', '456']));
+    # pre-defined tags are overridden by values of environment variables
+    self.assertTrue(codetags.isActive('abc'));
+    self.assertTrue(codetags.isActive('tag-1'));
+    self.assertTrue(codetags.isActive('abc', 'tag-1'));
+    self.assertTrue(codetags.isActive('disabled', 'tag-1'));
+    self.assertTrue(codetags.isActive('tag-4'));
+    self.assertFalse(codetags.isActive('tag-2'));
+    self.assertFalse(codetags.isActive('tag-3'));
+    self.assertFalse(codetags.isActive(['nil', 'tag-1']));
+    self.assertFalse(codetags.isActive('nil', 'tag-3'));
+    self.assertFalse(codetags.isActive('tag-3', 'disabled'));
+    pass
+
 if __name__ == '__main__':
   unittest.main()

@@ -102,7 +102,6 @@ class Codetags(object):
       _label = self.__presets["namespace"] + _label
     else:
       _label = DEFAULT_NAMESPACE + _label
-    pass
     if tagType == "includedTags":
       return _label + ("INCLUDED_TAGS" if not "includedTagsLabel" in self.__presets else self.__presets["includedTagsLabel"])
     if tagType == "excludedTags":
@@ -167,13 +166,31 @@ class Codetags(object):
     return not self._evaluateExpression(exp)
 
   def _evaluateExpression(self, exp):
+    if isinstance(exp, dict):
+      for op, subexp in exp.items():
+        if op == '$not':
+          if self._isNotOfLabelsSatisfied(subexp) == False:
+            return False
+        elif op == '$any':
+          if self._isAnyOfLabelsSatisfied(subexp) == False:
+            return False
+        elif op == '$all':
+          if self._isAllOfLabelsSatisfied(subexp) == False:
+            return False
+        else:
+          return False
+      return True
+    elif isinstance(exp, list):
+      return self._isAllOfLabelsSatisfied(exp)
     return self._checkLabelActivated(exp)
 
   def _checkLabelActivated(self, label):
-    if label in self.__store["cachedTags"]:
+    if isinstance(label, str):
+      if label in self.__store["cachedTags"]:
+        return self.__store["cachedTags"][label]
+      self.__store["cachedTags"][label] = self._forceCheckLabelActivated(label)
       return self.__store["cachedTags"][label]
-    self.__store["cachedTags"][label] = self._forceCheckLabelActivated(label)
-    return self.__store["cachedTags"][label]
+    return False
   
   def _forceCheckLabelActivated(self, label):
     if label in self.__store["excludedTags"]:
