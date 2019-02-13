@@ -10,7 +10,7 @@ class Codetags(object):
   def __init__(self, **kwargs):
     self.__store = { "env": {}, "cachedTags": {}, "declaredTags": [] }
     self.__presets = {}
-    self.initialize()
+    self.initialize(**kwargs)
     pass
 
   def initialize(self, **kwargs):
@@ -213,10 +213,26 @@ class Codetags(object):
   def _isVersionLT(self, version1, version2):
     return semver.compare(version1, version2) < 0
 
-default = Codetags()
+INSTANCES = {}
 
 def newInstance(name, **kwargs):
-  pass
+  name = misc.labelify(name)
+  if not isinstance(name, str):
+    raise TypeError("The name of a codetags instance must be a string")
+  if name == DEFAULT_NAMESPACE and name in INSTANCES:
+    raise ValueError(DEFAULT_NAMESPACE + " is default instance name. Please provides another name.")
+  INSTANCES[name] = Codetags(**kwargs)
+  return INSTANCES[name]
 
 def getInstance(name, **kwargs):
+  name = misc.labelify(name)
+  if not isinstance(name, str):
+    raise TypeError("The name of a codetags instance must be a string")
+  if name in INSTANCES and isinstance(INSTANCES[name], Codetags):
+    INSTANCES[name].initialize(**kwargs)
+    return INSTANCES[name]
+  else:
+    return newInstance(name, **kwargs)
   pass
+
+default = getInstance(DEFAULT_NAMESPACE)

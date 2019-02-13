@@ -18,10 +18,18 @@ class CodetagsTest(unittest.TestCase):
     codetags.reset()
     pass
 
-  def test_invalid_instance_name(self):
-    # with self.assertRaises(Exception) as context:
-    #   newInstance(1024)
-    # self.assertTrue('This is broken' in context.exception)
+  @data_provider(lambda: [ [ None ], [ 1024 ], [ True ], [ dict() ] ])
+  def test_invalid_newInstance_name(self, name):
+    with self.assertRaises(TypeError) as context:
+      newInstance(name)
+    self.assertTrue('The name of a codetags instance must be a string' in context.exception)
+    pass
+
+  @data_provider(lambda: [ ['codetags'], ['CodeTags'], ['CODETAGS'] ])
+  def test_illegal_newInstance_name(self, name):
+    with self.assertRaises(ValueError) as context:
+      newInstance(name)
+    self.assertTrue('CODETAGS is default instance name. Please provides another name.' in context.exception)
     pass
 
   def data_register_add_descriptors():
