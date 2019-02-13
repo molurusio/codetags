@@ -2,7 +2,6 @@
 
 import logging
 import re
-import semver
 
 class Misc(object):
   _handler = logging.StreamHandler()
@@ -21,19 +20,6 @@ class Misc(object):
     if type(label) == str:
       return re.sub('\W{1,}', '_', label).upper()
     return label
-
-  def isVersionValid(self, version):
-    try:
-      versionInfo = semver.parse(version)
-      return True
-    except:
-      return False
-
-  def isVersionLTE(self, version1, version2):
-    return semver.compare(version1, version2) <= 0
-  
-  def isVersionLT(self, version1, version2):
-    return semver.compare(version1, version2) < 0
 
   def stringToArray(self, labels):
     if isinstance(labels, str):

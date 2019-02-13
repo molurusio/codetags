@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import semver
 from misc import misc
 
 DEFAULT_NAMESPACE = "CODETAGS"
@@ -31,19 +32,19 @@ class Codetags(object):
           if "plan" in descriptor:
             plan = descriptor["plan"]
             if isinstance(plan, dict) and "enabled" in plan and isinstance(plan["enabled"], bool):
-              if "version" in self.__presets and misc.isVersionValid(self.__presets["version"]):
+              if "version" in self.__presets and self._isVersionValid(self.__presets["version"]):
                 _validated = True
                 _satisfied = True
                 if "minBound" in plan and isinstance(plan["minBound"], str):
-                  _validated = _validated and misc.isVersionValid(plan["minBound"])
+                  _validated = _validated and self._isVersionValid(plan["minBound"])
                   if _validated:
-                    _satisfied = _satisfied and misc.isVersionLTE(plan["minBound"], self.__presets["version"])
+                    _satisfied = _satisfied and self._isVersionLTE(plan["minBound"], self.__presets["version"])
                     pass
                   pass
                 if "maxBound" in plan and isinstance(plan["maxBound"], str):
-                  _validated = _validated and misc.isVersionValid(plan["maxBound"])
+                  _validated = _validated and self._isVersionValid(plan["maxBound"])
                   if _validated:
-                    _satisfied = _satisfied and misc.isVersionLT(self.__presets["version"], plan["maxBound"])
+                    _satisfied = _satisfied and self._isVersionLT(self.__presets["version"], plan["maxBound"])
                     pass
                   pass
                 if _validated:
@@ -198,6 +199,19 @@ class Codetags(object):
     if label in self.__store["includedTags"]:
       return True
     return label in self.__store["declaredTags"]
+  
+  def _isVersionValid(self, version):
+    try:
+      versionInfo = semver.parse(version)
+      return True
+    except:
+      return False
+
+  def _isVersionLTE(self, version1, version2):
+    return semver.compare(version1, version2) <= 0
+  
+  def _isVersionLT(self, version1, version2):
+    return semver.compare(version1, version2) < 0
 
 default = Codetags()
 

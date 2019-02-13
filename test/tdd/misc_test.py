@@ -25,33 +25,6 @@ class MiscTest(unittest.TestCase):
     self.assertListEqual(misc.stringToArray("abc , def"), ["abc", "def"])
     self.assertListEqual(misc.stringToArray("abc, ,def"), ["abc", "def"])
     pass
-  
-  def test_isVersionValid(self):
-    self.assertTrue(misc.isVersionValid("0.1.4"))
-    self.assertFalse(misc.isVersionValid("0.a.b"))
-    pass
-
-  def test_isVersionLTE(self):
-    self.assertFalse(misc.isVersionLTE("0.1.4", "0.1.3"))
-    self.assertTrue(misc.isVersionLTE("0.1.4", "0.1.4"))
-    self.assertTrue(misc.isVersionLTE("0.1.4", "0.1.5"))
-    self.assertTrue(misc.isVersionLTE("0.1.4", "0.2.4"))
-    with self.assertRaises(ValueError) as context:
-      misc.isVersionLTE("a.1.4", "0.2.4")
-    with self.assertRaises(ValueError) as context:
-      misc.isVersionLTE("0.1.4", "z.2.4")
-    pass
-
-  def test_isVersionLT(self):
-    self.assertFalse(misc.isVersionLT("0.1.4", "0.1.3"))
-    self.assertFalse(misc.isVersionLT("0.1.4", "0.1.4"))
-    self.assertTrue(misc.isVersionLT("0.1.4", "0.1.5"))
-    self.assertTrue(misc.isVersionLT("0.1.4", "0.2.4"))
-    with self.assertRaises(ValueError) as context:
-      misc.isVersionLT("a.1.4", "0.2.4")
-    with self.assertRaises(ValueError) as context:
-      misc.isVersionLT("0.1.4", "z.2.4")
-    pass
 
 if __name__ == '__main__':
   unittest.main()

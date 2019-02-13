@@ -150,5 +150,32 @@ class CodetagsTest(unittest.TestCase):
     self.assertFalse(codetags.isActive('tag-3', 'disabled'));
     pass
 
+  def test_isVersionValid(self):
+    self.assertTrue(codetags._isVersionValid("0.1.4"))
+    self.assertFalse(codetags._isVersionValid("0.a.b"))
+    pass
+
+  def test_isVersionLTE(self):
+    self.assertFalse(codetags._isVersionLTE("0.1.4", "0.1.3"))
+    self.assertTrue(codetags._isVersionLTE("0.1.4", "0.1.4"))
+    self.assertTrue(codetags._isVersionLTE("0.1.4", "0.1.5"))
+    self.assertTrue(codetags._isVersionLTE("0.1.4", "0.2.4"))
+    with self.assertRaises(ValueError) as context:
+      codetags._isVersionLTE("a.1.4", "0.2.4")
+    with self.assertRaises(ValueError) as context:
+      codetags._isVersionLTE("0.1.4", "z.2.4")
+    pass
+
+  def test_isVersionLT(self):
+    self.assertFalse(codetags._isVersionLT("0.1.4", "0.1.3"))
+    self.assertFalse(codetags._isVersionLT("0.1.4", "0.1.4"))
+    self.assertTrue(codetags._isVersionLT("0.1.4", "0.1.5"))
+    self.assertTrue(codetags._isVersionLT("0.1.4", "0.2.4"))
+    with self.assertRaises(ValueError) as context:
+      codetags._isVersionLT("a.1.4", "0.2.4")
+    with self.assertRaises(ValueError) as context:
+      codetags._isVersionLT("0.1.4", "z.2.4")
+    pass
+
 if __name__ == '__main__':
   unittest.main()
