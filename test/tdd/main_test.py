@@ -47,8 +47,8 @@ class CodetagsTest(unittest.TestCase):
     codetags.reset()
     codetags.initialize(**{
         'namespace': 'codetags',
-        'positiveTagsLabel': 'INCLUDED_TAGS',
-        'negativeTagsLabel': 'EXCLUDED_TAGS',
+        'INCLUDED_TAGS': 'INCLUDED_TAGS',
+        'EXCLUDED_TAGS': 'EXCLUDED_TAGS',
         'version': version,
     })
     codetags.register([
@@ -101,19 +101,19 @@ class CodetagsTest(unittest.TestCase):
 
   def data_getLabel():
     return [
-      [ None, "includedTags", None, "CODETAGS_INCLUDED_TAGS" ],
-      [ None, "excludedTags", None, "CODETAGS_EXCLUDED_TAGS" ],
-      [ None, "includedTags", "POSITIVE_TAGS", "CODETAGS_POSITIVE_TAGS" ],
-      [ None, "excludedTags", "NEGATIVE_TAGS", "CODETAGS_NEGATIVE_TAGS" ],
-      [ "testing", "includedTags", "POSITIVE_TAGS", "TESTING_POSITIVE_TAGS" ],
-      [ "TESTING", "excludedTags", "NEGATIVE_TAGS", "TESTING_NEGATIVE_TAGS" ]
+      [ None, "INCLUDED_TAGS", None, "CODETAGS_INCLUDED_TAGS" ],
+      [ None, "EXCLUDED_TAGS", None, "CODETAGS_EXCLUDED_TAGS" ],
+      [ None, "INCLUDED_TAGS", "POSITIVE_TAGS", "CODETAGS_POSITIVE_TAGS" ],
+      [ None, "EXCLUDED_TAGS", "NEGATIVE_TAGS", "CODETAGS_NEGATIVE_TAGS" ],
+      [ "testing", "INCLUDED_TAGS", "POSITIVE_TAGS", "TESTING_POSITIVE_TAGS" ],
+      [ "TESTING", "EXCLUDED_TAGS", "NEGATIVE_TAGS", "TESTING_NEGATIVE_TAGS" ]
     ]
 
   @data_provider(data_getLabel)
   def test_getLabel(self, namespace, label_type, label, expected):
     _params = {}
     if isinstance(label, str):
-      _params[label_type + 'Label'] = label
+      _params[label_type] = label
     if isinstance(namespace, str):
       _params["namespace"] = namespace
       pass

@@ -14,13 +14,13 @@ class Codetags(object):
     pass
 
   def initialize(self, **kwargs):
-    for field_name in ["namespace", "includedTagsLabel", "excludedTagsLabel"]:
+    for field_name in ["namespace", "INCLUDED_TAGS", "EXCLUDED_TAGS"]:
       if field_name in kwargs and type(kwargs[field_name]) == str:
         self.__presets[field_name] = misc.labelify(kwargs[field_name])
     for field_name in ["version"]:
       if field_name in kwargs and type(kwargs[field_name]) == str:
         self.__presets[field_name] = kwargs[field_name]
-    return self
+    return self._refreshEnv()
 
   def register(self, descriptors):
     if isinstance(descriptors, list):
@@ -82,8 +82,7 @@ class Codetags(object):
   
   def clearCache(self):
     self.__store["cachedTags"].clear()
-    self._refreshEnv()
-    return self
+    return self._refreshEnv()
   
   def reset(self):
     self.clearCache()
@@ -98,15 +97,18 @@ class Codetags(object):
     return self
   
   def _getLabel(self, tagType):
-    _label = '_'
+    _label = ""
     if "namespace" in self.__presets and isinstance(self.__presets["namespace"], str):
-      _label = self.__presets["namespace"] + _label
+      _label = self.__presets["namespace"]
     else:
-      _label = DEFAULT_NAMESPACE + _label
+      _label = DEFAULT_NAMESPACE
+    if tagType == "namespace":
+      return _label
+    _label = _label + "_"
     if tagType == "includedTags":
-      return _label + ("INCLUDED_TAGS" if not "includedTagsLabel" in self.__presets else self.__presets["includedTagsLabel"])
+      return _label + ("INCLUDED_TAGS" if not "INCLUDED_TAGS" in self.__presets else self.__presets["INCLUDED_TAGS"])
     if tagType == "excludedTags":
-      return _label + ("EXCLUDED_TAGS" if not "excludedTagsLabel" in self.__presets else self.__presets["excludedTagsLabel"])
+      return _label + ("EXCLUDED_TAGS" if not "EXCLUDED_TAGS" in self.__presets else self.__presets["EXCLUDED_TAGS"])
     return _label + (misc.labelify(tagType) if not tagType in self.__presets else self.__presets[tagType])
 
   def _getEnv(self, label, defaultValue = None):
@@ -215,10 +217,14 @@ class Codetags(object):
 
 INSTANCES = {}
 
-def newInstance(name, **kwargs):
-  name = misc.labelify(name)
+def _validateInstanceName(name):
   if not isinstance(name, str):
     raise TypeError("The name of a codetags instance must be a string")
+  pass
+
+def newInstance(name, **kwargs):
+  name = misc.labelify(name)
+  _validateInstanceName(name)
   if name == DEFAULT_NAMESPACE and name in INSTANCES:
     raise ValueError(DEFAULT_NAMESPACE + " is default instance name. Please provides another name.")
   INSTANCES[name] = Codetags(**kwargs)
@@ -226,8 +232,7 @@ def newInstance(name, **kwargs):
 
 def getInstance(name, **kwargs):
   name = misc.labelify(name)
-  if not isinstance(name, str):
-    raise TypeError("The name of a codetags instance must be a string")
+  _validateInstanceName(name)
   if name in INSTANCES and isinstance(INSTANCES[name], Codetags):
     INSTANCES[name].initialize(**kwargs)
     return INSTANCES[name]
