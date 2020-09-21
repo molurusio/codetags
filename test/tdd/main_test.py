@@ -4,12 +4,12 @@ import unittest
 from unittest_data_provider import data_provider
 import os, sys
 
-sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)) + '/../../codetags')
+sys.path.insert(0, os.path.dirname(os.path.realpath(__file__)) + '/../../src/codetags')
 
 from main import default as codetags
 from main import newInstance
 
-class CodetagsTest(unittest.TestCase):
+class TagManagerTest(unittest.TestCase):
 
   def setUp(self):
     pass

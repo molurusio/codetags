@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
 import setuptools
-import codetags as package
+import src.codetags as package
 
 setuptools.setup(
-  name = package.__name__,
+  name = 'codetags',
   version = package.__version__,
   description = package.__doc__.strip(),
   author = package.__author__,
@@ -14,7 +14,7 @@ setuptools.setup(
   download_url = 'https://github.com/molurusio/codetags/downloads',
   keywords = ['molurus', 'feature-toggle'],
   classifiers = [],
-  packages = [package.__name__],
-  #packages = setuptools.find_packages(),
-  #py_modules = [package.__name__],
+  # install_requires = open("requirements.txt").readlines(),
+  package_dir = {'':'src'},
+  packages = setuptools.find_packages('src'),
 )

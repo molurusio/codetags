@@ -2,11 +2,11 @@
 
 import os
 import semver
-from misc import misc
+from .misc import misc
 
 DEFAULT_NAMESPACE = "CODETAGS"
 
-class Codetags(object):
+class TagManager(object):
   def __init__(self, **kwargs):
     self.__store = { "env": {}, "cachedTags": {}, "declaredTags": [] }
     self.__presets = {}
@@ -227,13 +227,13 @@ def newInstance(name, **kwargs):
   _validateInstanceName(name)
   if name == DEFAULT_NAMESPACE and name in INSTANCES:
     raise ValueError(DEFAULT_NAMESPACE + " is default instance name. Please provides another name.")
-  INSTANCES[name] = Codetags(**kwargs)
+  INSTANCES[name] = TagManager(**kwargs)
   return INSTANCES[name]
 
 def getInstance(name, **kwargs):
   name = misc.labelify(name)
   _validateInstanceName(name)
-  if name in INSTANCES and isinstance(INSTANCES[name], Codetags):
+  if name in INSTANCES and isinstance(INSTANCES[name], TagManager):
     INSTANCES[name].initialize(**kwargs)
     return INSTANCES[name]
   else:
